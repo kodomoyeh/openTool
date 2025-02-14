@@ -7,8 +7,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from time import sleep
 import qrcode
 from art import text2art
+import re
 
 X = 10  # 要取前 X 個
+pattern = r"^\d{4}-\d{4}-\d{4}$"
 
 class expected_condition(object):
 
@@ -44,11 +46,16 @@ except TimeoutException:
     print ("Loading took too much time!")
 
 
-
-elements = chrome.find_elements(By.CSS_SELECTOR, "p[id^='js-copy-text']")[:X]
+buffer = X + 5
+elements = chrome.find_elements(By.CSS_SELECTOR, "p[id^='js-copy-text']")[:buffer]
 
 # 取得文字內容
 codes = [el.text for el in elements]
+
+#remove
+valid_codes = [code for code in codes if re.fullmatch(pattern, code)]
+
+codes = valid_codes[:X]
 
 chrome.quit()
 
